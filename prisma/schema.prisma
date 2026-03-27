@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../app/generated/prisma"
 }
 
@@ -25,6 +25,7 @@ model User {
 
   @@unique([email])
   @@map("user")
+  books Book[]
 }
 
 model Session {
@@ -73,4 +74,44 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Book {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  cards     Card[]
+}
+
+model Card {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  name      String
+  amount    Float
+  bookId    String
+  book      Book      @relation(fields: [bookId], references: [id])
+  expenses  Expense[]
+  incomes   Income[]
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String
+  amount    Float
+  category  String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id])
+}
+
+model Income {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String
+  amount    Float
+  category  String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id])
 }
